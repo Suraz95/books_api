@@ -47,7 +47,9 @@ const formatDate = (date) => {
   const seconds = String(d.getSeconds()).padStart(2, '0');
   return `${day}/${month}/${year} ${hours}:${minutes}:${seconds}`;
 };
-
+app.get("/",(req,res)=>{
+  res.send("hello");
+})
 app.post("/login", (req, res) => {
   const { email, password } = req.body;
   Customer.findOne({ email })
