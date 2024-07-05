@@ -4,6 +4,7 @@ const cors = require("cors");
 const jwt = require("jsonwebtoken");
 const app = express();
 const { Publisher } = require("./models/Book");
+const Contact = require('./models/ContactUs');
 const BuyingModule = require("./models/Buying");
 const Customer = require("./models/Customer");
 
@@ -466,16 +467,41 @@ app.post("/purchase", authenticateJWT, async (req, res) => {
 });
 
 
-
-
-
-
-
-
-
-
-
 // In your Express app (e.g., app.js or routes file)
+app.delete("/publishers/:publisherId/books/:bookId", authenticateJWT, async (req, res) => {
+  const { publisherId, bookId } = req.params;
+
+  try {
+    const publisher = await Publisher.findById(publisherId);
+    if (!publisher) {
+      return res.status(404).json({ message: "Publisher not found" });
+    }
+
+    let bookDeleted = false;
+    publisher.publications.forEach((publication) => {
+      const bookIndex = publication.publishedBooks.findIndex(
+        (book) => book._id.equals(bookId)
+      );
+      if (bookIndex !== -1) {
+        publication.publishedBooks.splice(bookIndex, 1);
+        bookDeleted = true;
+      }
+    });
+
+    if (!bookDeleted) {
+      return res
+        .status(404)
+        .json({ message: "Book not found in publisher's publications" });
+    }
+
+    await publisher.save();
+    res.status(200).json({ message: "Book deleted successfully", publisher });
+  } catch (error) {
+    console.error("Error deleting book:", error);
+    res.status(500).json({ message: "Internal server error" });
+  }
+});
+
 app.put("/books/:id", async (req, res) => {
   const { id } = req.params;
   const {
@@ -602,6 +628,7 @@ app.delete(
   }
 );
 
+
 app.get("/my-orders", authenticateJWT, async (req, res) => {
   try {
     const { email } = req.user;
@@ -678,7 +705,22 @@ app.get('/buyingmodules', async (req, res) => {
     res.status(500).send("Error fetching buying data");
   }
 });
+app.post('/send-message', async (req, res) => {
+  const { name, email, message } = req.body;
 
+  try {
+    const newContact = new Contact({
+      name,
+      email,
+      message
+    });
+
+    await newContact.save();
+    res.status(200).json({ success: true, message: 'Message sent successfully' });
+  } catch (err) {
+    res.status(500).json({ success: false, message: 'Server error' });
+  }
+});
 const PORT = 8000;
 app.listen(PORT, () => {
   console.log(`Server is running on port ${PORT}`);
