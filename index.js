@@ -216,7 +216,7 @@ app.put("/customers/:id", authenticateJWT, (req, res) => {
     });
 });
 
-app.post("/dashboard/book", authenticateJWT, async (req, res) => {
+app.post("/dashboard/book",  async (req, res) => {
   try {
     const { publisherName, publications } = req.body;
 
