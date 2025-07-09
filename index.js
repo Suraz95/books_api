@@ -9,7 +9,9 @@ const BuyingModule = require("./models/Buying");
 const Customer = require("./models/Customer");
 
 app.use(express.json());
-app.use(cors());
+app.use(cors(
+  origin:*;
+));
 
 const db =
   "mongodb+srv://shaiksuraz50:czPhpDlMZGoilAaJ@cluster0.zm4vqsc.mongodb.net/?retryWrites=true&w=majority&appName=Cluster0";
