@@ -10,7 +10,7 @@ const Customer = require("./models/Customer");
 
 app.use(express.json());
 app.use(cors(
-  origin:*;
+  origin:"https://the-book-vault-six.vercel.app/";
 ));
 
 const db =
